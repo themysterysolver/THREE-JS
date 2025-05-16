@@ -6,7 +6,7 @@ const h=window.innerHeight;
 const w=window.innerWidth;
 const render=new THREE.WebGLRenderer({antialias:true});
 render.setSize(w,h);
-render.setClearColor(0xffffad)
+render.setClearColor(0x111111)
 document.body.appendChild(render.domElement);
 
 //camera
@@ -38,7 +38,7 @@ const boxGeo=new THREE.BoxGeometry(boxSize,boxSize,boxSize,boxSize);//w,h,d
 const edges=new THREE.EdgesGeometry(boxGeo);//takes geo as I/P and extracts only edges
 const boxMaterial=new THREE.LineBasicMaterial({color:0x000000});
 const boxWireframe=new THREE.LineSegments(edges,boxMaterial);//draw only lines
-rotatingGroup.add(boxWireframe);
+//rotatingGroup.add(boxWireframe);
 
 
 //geometry types
@@ -50,6 +50,12 @@ const geoTypes=[
 //random pos inside object
 function randomPositionInisde(){
   return Math.random()*boxSize - boxSize/2;
+}
+// random rotation
+function randomRotation(){
+  return new THREE.Euler( //angle
+    Math.random()* Math.PI*2,Math.random()* Math.PI*2,Math.random()* Math.PI*2 //180*60=360
+  )
 }
 // object creation
 let objects=[];
@@ -65,11 +71,20 @@ function createObjects(){
     const mesh=new THREE.Mesh(geo,material);
     mesh.position.set(randomPositionInisde(),randomPositionInisde(),randomPositionInisde());
     mesh.scale.set(8,8,8);
+    mesh.rotation.copy(randomRotation());
+    mesh.userData.rotationSpeed=randomRotationSpeed();
     rotatingGroup.add(mesh);
     objects.push(mesh);
   }
 }
-
+//randomRoattaionSPeed
+function randomRotationSpeed(){
+  return new THREE.Vector3( 
+      (Math.random() -0.5)*0.02,
+      (Math.random() -0.5)*0.02,
+      (Math.random() -0.5)*0.02 
+    );
+}
 //chnageopcaity
 function changeOpacity(){
   objects.forEach(ele=>{
@@ -83,6 +98,15 @@ const control=new OrbitControls(camera,render.domElement);
 
 function animate(){
   requestAnimationFrame(animate);
+  rotatingGroup.rotation.z+=0.001;
+  rotatingGroup.rotation.y+=0.0015;
+  objects.forEach(ele=>{
+     const rot=ele.userData.rotationSpeed;
+     ele.rotation.x+=rot.x;
+     ele.rotation.y+=rot.y;
+     ele.rotation.z+=rot.z;
+  })
   render.render(scene,camera);
 }
+createObjects();
 animate();
