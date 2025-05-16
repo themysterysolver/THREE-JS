@@ -95,7 +95,13 @@ function changeOpacity(){
 //-------------------------------------------------------------
 //contols
 const control=new OrbitControls(camera,render.domElement);
-
+//resizing issue
+window.addEventListener('resize',()=>{
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  render.setSize(window.innerWidth, window.innerHeight);
+});
+//animate
 function animate(){
   requestAnimationFrame(animate);
   rotatingGroup.rotation.z+=0.001;
