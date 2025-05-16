@@ -1,4 +1,4 @@
-### TORUS 🛟
+# TORUS 🛟
 ## ABOUT 🎲
 - A simple torus shape in a 3D void.
 - It rotates infinitly in the space.
