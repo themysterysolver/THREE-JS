@@ -25,8 +25,8 @@ const scene=new THREE.Scene();
 //gui
 const gui=new dat.GUI();
 const params={count:100,opacity:1.0} //this decides the value
-gui.add(params,'count',10,2000,1).onChange(); //obj,key to the param(property),min,max,step
-gui.add(params,'opacity',0,1,0.01).onChange();
+gui.add(params,'count',10,2000,1).onChange(createObjects); //obj,key to the param(property),min,max,step
+gui.add(params,'opacity',0.12,1,0.01).onChange(changeOpacity);
 
 //groups
 const rotatingGroup=new THREE.Group(); //just used for grouping!
@@ -40,6 +40,42 @@ const boxMaterial=new THREE.LineBasicMaterial({color:0x000000});
 const boxWireframe=new THREE.LineSegments(edges,boxMaterial);//draw only lines
 rotatingGroup.add(boxWireframe);
 
+
+//geometry types
+const geoTypes=[
+  new THREE.BoxGeometry(),
+  new THREE.SphereGeometry(1,16,16), //r,width seg,ht seg
+  new THREE.ConeGeometry(1,2,16) //r,ht,rad seg
+]
+//random pos inside object
+function randomPositionInisde(){
+  return Math.random()*boxSize - boxSize/2;
+}
+// object creation
+let objects=[];
+function createObjects(){
+  rotatingGroup.clear();
+  objects=[];
+  for(let i=0;i<params.count;i++){
+    const geo=geoTypes[Math.floor(Math.random()*geoTypes.length)];
+    const material=new THREE.MeshNormalMaterial({
+      transparent:true,
+      opacity:params.opacity
+    });//it clrs each face based on the direction it's facing in 3D space,thus RAINBOW
+    const mesh=new THREE.Mesh(geo,material);
+    mesh.position.set(randomPositionInisde(),randomPositionInisde(),randomPositionInisde());
+    mesh.scale.set(8,8,8);
+    rotatingGroup.add(mesh);
+    objects.push(mesh);
+  }
+}
+
+//chnageopcaity
+function changeOpacity(){
+  objects.forEach(ele=>{
+    ele.material.opacity=params.opacity;
+  })
+}
 
 //-------------------------------------------------------------
 //contols
